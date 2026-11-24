@@ -75,6 +75,26 @@ jobs:
             hxcpp-android-${{ github.ref_name }}-
             hxcpp-android-
 
+      - name: Restore Lime ndll cache
+        id: cache-lime
+        uses: actions/cache@v4
+        with:
+          path: |
+            .haxelib/lime/git/ndll/Linux64
+            .haxelib/lime/git/ndll/Android
+            .haxelib/lime/git/ndll/Android64
+          key: lime-ndll-${{ hashFiles('hmm.json') }}-${{ env.NDK_VERSION }}
+
+      - name: Install native dependencies
+        if: steps.cache-lime.outputs.cache-hit != 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y g++ libx11-dev libxi-dev libxext-dev libxinerama-dev libxrandr-dev libgl-dev libgl1-mesa-dev libasound2-dev libpulse-dev
+
+      - name: Rebuild Lime for Linux
+        if: steps.cache-lime.outputs.cache-hit != 'true'
+        run: haxelib run lime rebuild linux -64 -release -nocffi
+
       - name: Configure Lime
         run: |
           haxelib run lime config ANDROID_SDK $ANDROID_SDK_ROOT
@@ -82,16 +102,9 @@ jobs:
           haxelib run lime config JAVA_HOME $JAVA_HOME
           haxelib run lime config ANDROID_SETUP true
 
-      - name: Restore Lime Android cache
-        id: cache-lime
-        uses: actions/cache@v4
-        with:
-          path: .haxelib/lime/git/ndll/Android*
-          key: lime-android-${{ hashFiles('hmm.json') }}-${{ env.NDK_VERSION }}
-
-      - name: Rebuild Lime
+      - name: Rebuild Lime for Android
         if: steps.cache-lime.outputs.cache-hit != 'true'
-        run: haxelib run lime rebuild android -release
+        run: haxelib run lime rebuild android -release -nocffi
 
       - name: Populate .env
         run: |
