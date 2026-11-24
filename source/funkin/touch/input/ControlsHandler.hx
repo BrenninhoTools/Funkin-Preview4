@@ -155,7 +155,7 @@ class ControlsHandler
   {
     var gamepads:Bool = FlxG.gamepads.numActiveGamepads > 0;
     var keyboards:Bool = #if android KeyboardUtil.keyboardConnected #elseif ios KeyboardUtil.isKeyboardConnected() #else false #end;
-    var chromebook:Bool = #if android extension.androidtools.Tools.isChromebook() #else false #end;
+    var chromebook:Bool = #if android androidmanager.Tools.isChromebook() #else false #end;
 
     return gamepads || keyboards || chromebook;
   }

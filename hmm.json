@@ -25,9 +25,10 @@
       "url": "https://github.com/FunkinCrew/extension-agesignals"
     },
     {
-      "name": "extension-androidtools",
-      "type": "haxelib",
-      "version": "2.2.2"
+      "name": "android-manager",
+      "type": "git",
+      "ref": "23257923a5867abdc2076ccbc0e4d02f25403aac",
+      "url": "https://github.com/BrenninhoTools/android-manager"
     },
     {
       "name": "dox",

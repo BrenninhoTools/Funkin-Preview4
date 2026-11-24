@@ -1611,7 +1611,7 @@ class Project extends HXProject
 
     if (isAndroid())
     {
-      addHaxelib('extension-androidtools'); // Android Functions
+      addHaxelib('android-manager'); // Android Functions
     }
 
     if (isLinux())

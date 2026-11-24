@@ -58,7 +58,7 @@ class ApplicationMain
     // Set the current working directory for Android and iOS devices
     #if android
     // On Android use External Files Dir.
-    Sys.setCwd(haxe.io.Path.addTrailingSlash(extension.androidtools.content.Context.getExternalFilesDir()));
+    Sys.setCwd(haxe.io.Path.addTrailingSlash(androidmanager.content.Context.getExternalFilesDir()));
     #elseif ios
     // On iOS use Documents Dir.
     Sys.setCwd(haxe.io.Path.addTrailingSlash(lime.system.System.documentsDirectory));

@@ -2,7 +2,7 @@ package funkin.util.mobile;
 
 #if FEATURE_MOBILE_IAP
 #if android
-import extension.androidtools.widget.Toast;
+import androidmanager.widget.Toast;
 import extension.iapcore.android.IAPAndroid;
 import extension.iapcore.android.IAPProductDetails;
 import extension.iapcore.android.IAPPurchase;

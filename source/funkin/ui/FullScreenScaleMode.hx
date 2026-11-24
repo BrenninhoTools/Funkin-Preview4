@@ -12,8 +12,8 @@ import openfl.display.BitmapData;
 import funkin.util.MathUtil;
 import funkin.graphics.FunkinCamera;
 #if android
-import extension.androidtools.os.Build;
-import extension.androidtools.Tools;
+import androidmanager.os.Build;
+import androidmanager.Tools;
 #end
 
 class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
