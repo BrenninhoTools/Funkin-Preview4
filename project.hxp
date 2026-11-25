@@ -853,7 +853,7 @@ class Project extends HXProject
 
       if (isRelease())
       {
-        if (envConfig != null)
+        if (envConfig != null && envConfig.exists('KEYSTORE_PATH'))
         {
           keystore = new Keystore();
           keystore.path = Std.string(envConfig.get('KEYSTORE_PATH'));

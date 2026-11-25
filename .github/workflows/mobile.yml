@@ -113,7 +113,7 @@ jobs:
           echo "API_NG_ENC_KEY=${{ secrets.API_NG_ENC_KEY }}" >> .env
 
       - name: Build
-        run: haxelib run lime build android -release -DGITHUB_BUILD
+        run: haxelib run lime build android -release -DGITHUB_BUILD -DNO_FEATURE_MOBILE_ADVERTISEMENTS -DNO_FEATURE_MOBILE_IAP
         timeout-minutes: 120
 
       - name: Upload APK
