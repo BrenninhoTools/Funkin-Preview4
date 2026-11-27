@@ -31,7 +31,7 @@ class Cursor
    */
   public static inline function show():Void
   {
-    FlxG.mouse.visible = true;
+    FlxG.mouse.visible = #if mobile false #else true #end;
     // Reset the cursor mode.
     Cursor.cursorMode = Default;
   }

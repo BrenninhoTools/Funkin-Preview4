@@ -684,6 +684,22 @@ class Preferences
     return value;
   }
 
+  public static var screenStyle(get, set):String;
+
+  static function get_screenStyle():String
+  {
+    return Save?.instance?.mobileOptions?.screenStyle ?? 'Original';
+  }
+
+  static function set_screenStyle(value:String):String
+  {
+    var save:Save = Save.instance;
+    save.mobileOptions.screenStyle = value;
+    Save.system.flush();
+    funkin.ui.FullScreenScaleMode.enabled = value == 'Full';
+    return value;
+  }
+
   public static var touchCursor(get, set):Bool;
 
   static function get_touchCursor():Bool

@@ -15,6 +15,8 @@ using StringTools;
 enum abstract StorageType(String) from String to String
 {
   public var Data = 'Data';
+  public var Media = 'Media';
+  public var Obb = 'Obb';
   public var External = 'External';
 }
 
@@ -41,7 +43,13 @@ class StorageUtil
 
     try
     {
-      return File.getContent(path).trim() == External ? External : Data;
+      return switch (File.getContent(path).trim())
+      {
+        case 'External': External;
+        case 'Media': Media;
+        case 'Obb': Obb;
+        default: Data;
+      }
     }
     catch (e)
     {
@@ -66,10 +74,18 @@ class StorageUtil
   public static function getDirectory(type:StorageType):String
   {
     final dataDir:String = Context.getExternalFilesDir() ?? Sys.getCwd();
-    if (type == External)
+    switch (type)
     {
-      final root:Null<String> = Environment.getExternalStorageDirectory();
-      if (root != null && root.length > 0) return Path.addTrailingSlash(Path.join([root, EXTERNAL_FOLDER]));
+      case External:
+        final root:Null<String> = Environment.getExternalStorageDirectory();
+        if (root != null && root.length > 0) return Path.addTrailingSlash(Path.join([root, EXTERNAL_FOLDER]));
+      case Media:
+        final media:Null<String> = Context.getExternalMediaDir();
+        if (media != null && media.length > 0) return Path.addTrailingSlash(media);
+      case Obb:
+        final obb:Null<String> = Context.getObbDir();
+        if (obb != null && obb.length > 0) return Path.addTrailingSlash(obb);
+      default:
     }
     return Path.addTrailingSlash(dataDir);
   }

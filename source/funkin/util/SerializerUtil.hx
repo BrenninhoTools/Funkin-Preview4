@@ -83,7 +83,7 @@ class SerializerUtil
     // Hacky because you can't use `isOfType` on a struct.
     if (key == 'version')
     {
-      if (Std.isOfType(value, String)) return value;
+      if (value == null || Std.isOfType(value, String)) return value;
 
       // Stringify Version objects.
       return serializeVersion(cast value);
@@ -103,7 +103,7 @@ class SerializerUtil
     var result = '${value.major}.${value.minor}.${value.patch}';
     if (value.hasPre) result += '-${value.pre}';
     // TODO: Merge fix for version.hasBuild
-    if (value.build.length > 0) result += '+${value.build}';
+    if (value.build != null && value.build.length > 0) result += '+${value.build}';
     return result;
   }
 

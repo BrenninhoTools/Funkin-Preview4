@@ -68,6 +68,10 @@ class Main extends Sprite
     // Add this signal so the player can toggle the debug display using a hotkey.
     FlxG.signals.postUpdate.add(handleDebugDisplayKeys);
 
+    #if mobile
+    FlxG.signals.postUpdate.add(() -> if (FlxG.mouse.visible) FlxG.mouse.visible = false);
+    #end
+
     // Add this signal so we can reposition and resize the memory and fps counter.
     FlxG.signals.preUpdate.add(repositionCounters.bind(true));
 

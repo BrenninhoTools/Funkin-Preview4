@@ -191,7 +191,8 @@ class Save implements ConsoleClass implements ISerializable
         invisibleHitbox: false,
         invisiblePauseButton: false,
         chartEditorInPause: false,
-        touchCursor: true
+        touchCursor: true,
+        screenStyle: 'Original'
       },
       #end
       mods: {
@@ -1645,6 +1646,8 @@ typedef SaveDataMobileOptions =
   var chartEditorInPause:Bool;
 
   var touchCursor:Bool;
+
+  var screenStyle:String;
 }
 #end
 

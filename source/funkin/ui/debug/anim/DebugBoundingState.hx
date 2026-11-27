@@ -428,14 +428,24 @@ class DebugBoundingState extends FlxState
   {
     if (swagChar == null || swagChar._data == null) return;
 
+    var outputString:String = null;
     try
     {
-      final outputString:String = offsetsOnly ? buildOutputStringOld() : buildOutputStringNew();
+      outputString = offsetsOnly ? buildOutputStringOld() : buildOutputStringNew();
+    }
+    catch (e)
+    {
+      lime.app.Application.current.window.alert('Could not build the character data: ' + Std.string(e), 'Could not save');
+      return;
+    }
+
+    try
+    {
       saveOffsets(outputString, offsetsOnly ? swagChar.characterId + "Offsets.txt" : swagChar.characterId + ".json");
     }
     catch (e)
     {
-      lime.app.Application.current.window.alert(Std.string(e), 'Could not save');
+      lime.app.Application.current.window.alert('Could not open the file picker: ' + Std.string(e), 'Could not save');
     }
   }
 

@@ -257,6 +257,7 @@ class InitState extends FlxState
       funkin.util.plugins.TouchPointerPlugin.initialize();
       #if mobile
       funkin.util.plugins.TouchPointerPlugin.enabled = Preferences.touchCursor;
+      funkin.ui.FullScreenScaleMode.enabled = Preferences.screenStyle == 'Full';
       #end
       funkin.touch.input.ControlsHandler.initInputTrackers();
       #end

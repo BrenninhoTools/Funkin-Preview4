@@ -36,14 +36,23 @@ class MobileOptionsMenu extends PreferencesMenu
     {
       Preferences.touchCursor = value;
     }, Preferences.touchCursor);
+    createPrefItemEnum('Screen Style', 'Original keeps the 16:9 screen, Full fills the whole screen without stretching.', [
+      "Original" => "Original",
+      "Full" => "Full"
+    ], function(key:String, value:String):Void
+    {
+      Preferences.screenStyle = value;
+    }, Preferences.screenStyle == "Full" ? "Full" : "Original");
     #if android
     createPrefItemEnum('Storage Type', 'Where mods, charts and backups are kept. External uses the .FNFPreview4 folder.', [
       "Data" => StorageType.Data,
+      "Media" => StorageType.Media,
+      "Obb" => StorageType.Obb,
       "External" => StorageType.External
     ], function(key:String, value:StorageType):Void
     {
       StorageUtil.switchTo(value);
-    }, StorageUtil.storageType == StorageType.External ? "External" : "Data");
+    }, Std.string(StorageUtil.storageType));
     #end
   }
 }
