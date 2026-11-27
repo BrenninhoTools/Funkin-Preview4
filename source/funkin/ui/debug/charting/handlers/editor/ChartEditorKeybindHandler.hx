@@ -93,7 +93,7 @@ class ChartEditorKeybindHandler
       shouldSnap = true;
     }
 
-    #if FLX_TOUCH
+    #if mobile
     if (FlxG.touches.list.length >= 2)
     {
       var first = FlxG.touches.list[0];
@@ -665,7 +665,7 @@ class ChartEditorKeybindHandler
 
   static var lastZoomStepTime:Float = 0;
 
-  #if FLX_TOUCH
+  #if mobile
   static final TOUCH_PINCH_STEP:Float = 90;
 
   static var touchPinchDistance:Float = -1;
