@@ -711,6 +711,27 @@ class TimelineViewport extends Box
 
   // Caller is responsible for `refreshLayout()` afterwards.
 
+  public function handleTouchGesture(panX:Float, panY:Float, zoomRatio:Float, centerX:Float, centerY:Float):Bool
+  {
+    if (centerX < screenLeft || centerX > screenLeft + width || centerY < screenTop || centerY > screenTop + height) return false;
+
+    if (zoomRatio != 1) zoomBy(zoomRatio, centerX - screenLeft);
+
+    if (panX != 0)
+    {
+      cancelScrollEase();
+      scrollOffsetMs = offsetMsByPixels(scrollOffsetMs, -panX);
+      if (scrollOffsetMs < 0) scrollOffsetMs = 0;
+      chasing = false;
+    }
+
+    if (panY != 0) scrollVertical(-panY / LAYER_HEIGHT);
+
+    refreshLayout();
+    dispatch(new TimelineEvent(TimelineEvent.ZOOM_CHANGED));
+    return true;
+  }
+
   public function scrollVertical(delta:Float):Void
   {
     var maxScroll:Float = maxLayerScrollPx;

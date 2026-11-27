@@ -1462,6 +1462,21 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
     if (mainView != null && (FlxG.mouse.deltaWheel.x != 0 || FlxG.mouse.deltaWheel.y != 0) && !isCursorOverHaxeUI) mainView.handleTrackpadScroll();
 
+    #if mobile
+    if (funkin.util.TouchGestureUtil.update())
+    {
+      final panX:Float = funkin.util.TouchGestureUtil.panX;
+      final panY:Float = funkin.util.TouchGestureUtil.panY;
+      final zoomRatio:Float = funkin.util.TouchGestureUtil.zoomRatio;
+      final centerX:Float = funkin.util.TouchGestureUtil.centerX;
+      final centerY:Float = funkin.util.TouchGestureUtil.centerY;
+      final handledByTimeline:Bool = timeline != null
+        && timeline.viewport != null
+        && timeline.viewport.handleTouchGesture(panX, panY, zoomRatio, centerX, centerY);
+      if (!handledByTimeline && mainView != null) mainView.handleTouchGesture(panX, panY, zoomRatio, centerX, centerY);
+    }
+    #end
+
     super.update(elapsed);
 
     _cameraTarget.x = FlxMath.lerp(_cameraTarget.x, goToPoint.x, 0.8);

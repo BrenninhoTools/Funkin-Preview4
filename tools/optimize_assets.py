@@ -28,7 +28,7 @@ try:
 except ImportError:
     imagequant = None
 
-VERSION = "9"
+VERSION = "10"
 CACHE_NAME = ".asset_cache.json"
 SUBTEXTURE = re.compile(r"<SubTexture\b[^>]*>")
 NUMBER = r'(\b{}\s*=\s*")(-?\d+(?:\.\d+)?)(")'
@@ -395,10 +395,31 @@ def encode_pillow(pixels):
     return best
 
 
+def decodes_to(data, pixels):
+    try:
+        with Image.open(io.BytesIO(data)) as image:
+            decoded = np.asarray(image.convert("RGBA"))
+    except Exception:
+        return False
+    expected = pixels if pixels.shape[2] == 4 else np.concatenate([pixels, np.full(pixels.shape[:2] + (1,), 255, np.uint8)], axis=2)
+    if decoded.shape != expected.shape:
+        return False
+    visible = expected[:, :, 3] > 0
+    return np.array_equal(decoded[:, :, 3], expected[:, :, 3]) and np.array_equal(decoded[visible][:, :3], expected[visible][:, :3])
+
+
+def encode_safe(pixels):
+    image = Image.fromarray(np.ascontiguousarray(pixels), "RGBA" if pixels.shape[2] == 4 else "RGB")
+    buffer = io.BytesIO()
+    image.save(buffer, "PNG", optimize=True, compress_level=9)
+    return buffer.getvalue()
+
+
 def encode(pixels, options):
-    if oxipng is not None:
-        return encode_oxipng(pixels, options)
-    return encode_pillow(pixels)
+    data = encode_oxipng(pixels, options) if oxipng is not None else encode_pillow(pixels)
+    if decodes_to(data, pixels):
+        return data
+    return encode_safe(pixels)
 
 
 def premultiplied(pixels):
@@ -513,7 +534,7 @@ def optimize_file(path, xml_path, options, grid):
 
     with Image.open(path) as source:
         source.load()
-        has_alpha = source.mode in ("RGBA", "LA", "PA") or (source.mode == "P" and "transparency" in source.info)
+        has_alpha = source.mode in ("RGBA", "LA", "PA", "RGBa", "La") or "transparency" in source.info
         pixels = np.asarray(source.convert("RGBA" if has_alpha else "RGB"))
 
     if pixels.shape[2] == 3 and os.path.exists(xml_path) and (options.trim or options.repack):

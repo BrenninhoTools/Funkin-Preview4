@@ -12,6 +12,10 @@ class TouchGestureUtil
 
   public static var zoomRatio(default, null):Float = 1;
 
+  public static var centerX(default, null):Float = 0;
+
+  public static var centerY(default, null):Float = 0;
+
   static var lastDistance:Float = -1;
 
   public static function update():Bool
@@ -29,6 +33,9 @@ class TouchGestureUtil
     final distanceX:Float = first.viewX - second.viewX;
     final distanceY:Float = first.viewY - second.viewY;
     final distance:Float = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+
+    centerX = (first.viewX + second.viewX) / 2;
+    centerY = (first.viewY + second.viewY) / 2;
 
     final fresh:Bool = first.justPressed || second.justPressed || lastDistance <= 0;
 

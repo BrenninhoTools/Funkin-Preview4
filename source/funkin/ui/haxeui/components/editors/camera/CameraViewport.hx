@@ -41,6 +41,27 @@ class CameraViewport extends Box
     panEvent.panDeltaY = dy * TRACKPAD_PAN_SCALE;
     dispatch(panEvent);
   }
+
+  public function handleTouchGesture(panX:Float, panY:Float, zoomRatio:Float, centerX:Float, centerY:Float):Bool
+  {
+    if (centerX < screenLeft || centerX > screenLeft + width || centerY < screenTop || centerY > screenTop + height) return false;
+
+    if (zoomRatio != 1)
+    {
+      var zoomEvent:CameraViewportEvent = new CameraViewportEvent(CameraViewportEvent.ZOOM);
+      zoomEvent.zoomDelta = Math.log(zoomRatio) * 10;
+      dispatch(zoomEvent);
+    }
+
+    if (panX != 0 || panY != 0)
+    {
+      var panEvent:CameraViewportEvent = new CameraViewportEvent(CameraViewportEvent.GESTURE_PAN);
+      panEvent.panDeltaX = panX;
+      panEvent.panDeltaY = panY;
+      dispatch(panEvent);
+    }
+    return true;
+  }
 }
 
 private enum PanSource
