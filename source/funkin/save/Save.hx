@@ -191,7 +191,7 @@ class Save implements ConsoleClass implements ISerializable
         invisibleHitbox: false,
         invisiblePauseButton: false,
         chartEditorInPause: false,
-        touchCursor: false
+        touchCursor: true
       },
       #end
       mods: {

@@ -32,7 +32,7 @@ class MobileOptionsMenu extends PreferencesMenu
       Preferences.chartEditorInPause = value;
     }, Preferences.chartEditorInPause);
     #end
-    createPrefItemCheckbox('Touch Cursor', 'When enabled, a cursor follows your finger on the screen.', function(value:Bool):Void
+    createPrefItemCheckbox('Touch Cursor', 'When enabled, Kevin and Michael follow your fingers on the screen.', function(value:Bool):Void
     {
       Preferences.touchCursor = value;
     }, Preferences.touchCursor);

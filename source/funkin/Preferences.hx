@@ -688,7 +688,7 @@ class Preferences
 
   static function get_touchCursor():Bool
   {
-    return Save?.instance?.mobileOptions?.touchCursor ?? false;
+    return Save?.instance?.mobileOptions?.touchCursor ?? true;
   }
 
   static function set_touchCursor(value:Bool):Bool
@@ -696,7 +696,9 @@ class Preferences
     var save:Save = Save.instance;
     save.mobileOptions.touchCursor = value;
     Save.system.flush();
-    if (!value) funkin.input.Cursor.hide();
+    #if FEATURE_TOUCH_CONTROLS
+    funkin.util.plugins.TouchPointerPlugin.enabled = value;
+    #end
     return value;
   }
 

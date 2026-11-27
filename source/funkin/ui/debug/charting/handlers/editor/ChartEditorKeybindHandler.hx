@@ -43,6 +43,15 @@ class ChartEditorKeybindHandler
    */
   public static function handleScrollKeybinds(state:ChartEditorState):Void
   {
+    #if mobile
+    if (FlxG.mouse.justReleased)
+    {
+      if (!ChartEditorCursorHandler.touchScrolling && !state.isCursorOverHaxeUI) ChartEditorCursorHandler.placeTouchPending(state);
+      ChartEditorCursorHandler.touchPending = null;
+      ChartEditorCursorHandler.touchScrolling = false;
+    }
+    #end
+
     // Don't scroll when the user is interacting with the UI, unless a playbar button (the << >> ones) is pressed.
     if
       ((state.isHaxeUIFocused || (state.isCursorOverHaxeUI && !state.canScrollComment && state.scrollAnchorScreenPos == null))
@@ -90,12 +99,8 @@ class ChartEditorKeybindHandler
       var first = FlxG.touches.list[0];
       var second = FlxG.touches.list[1];
 
-      if (state.selectionBoxStartPos != null)
-      {
-        if (state.selectionBoxSprite != null) state.selectionBoxSprite.visible = false;
-        state.selectionBoxStartPos.put();
-        state.selectionBoxStartPos = null;
-      }
+      ChartEditorCursorHandler.touchPending = null;
+      ChartEditorCursorHandler.touchScrolling = true;
 
       var distanceX:Float = first.viewX - second.viewX;
       var distanceY:Float = first.viewY - second.viewY;
@@ -110,15 +115,27 @@ class ChartEditorKeybindHandler
         state.zoomLevelIndex += distance > touchPinchDistance ? 1 : -1;
         touchPinchDistance = distance;
       }
-      else
-      {
-        scrollAmount = -((first.deltaViewY + second.deltaViewY) / 2) * screenDirection;
-        shouldPause = true;
-      }
     }
     else
     {
       touchPinchDistance = -1;
+
+      final touch = FlxG.touches.list.length == 1 ? FlxG.touches.list[0] : null;
+      final canScroll:Bool = touch != null
+        && touch.pressed
+        && state.dragTargetNote == null
+        && state.dragTargetEvent == null
+        && state.currentPlaceNoteData == null
+        && !state.gridPlayheadScrollAreaPressed
+        && state.notePreviewScrollAreaStartPos == null;
+
+      if (canScroll && (ChartEditorCursorHandler.touchScrolling || funkin.util.TouchUtil.isVerticalGesture()))
+      {
+        ChartEditorCursorHandler.touchScrolling = true;
+        ChartEditorCursorHandler.touchPending = null;
+        scrollAmount = -touch.deltaViewY * screenDirection;
+        shouldPause = true;
+      }
     }
     #end
 

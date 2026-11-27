@@ -255,6 +255,9 @@ class InitState extends FlxState
       #end
       #if FEATURE_TOUCH_CONTROLS
       funkin.util.plugins.TouchPointerPlugin.initialize();
+      #if mobile
+      funkin.util.plugins.TouchPointerPlugin.enabled = Preferences.touchCursor;
+      #end
       funkin.touch.input.ControlsHandler.initInputTrackers();
       #end
       funkin.util.plugins.SidePanelPlugin.initialize();

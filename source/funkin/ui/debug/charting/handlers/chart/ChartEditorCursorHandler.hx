@@ -39,6 +39,30 @@ using Lambda;
 @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorCursorHandler
 {
+  #if mobile
+  public static var touchPending:Null<{ms:Float, column:Int, isEvent:Bool}> = null;
+
+  public static var touchScrolling:Bool = false;
+
+  public static function placeTouchPending(state:ChartEditorState):Void
+  {
+    final pending = touchPending;
+    touchPending = null;
+    if (pending == null) return;
+
+    if (pending.isEvent)
+    {
+      state.performCommand(new AddEventsCommand([new SongEventData(pending.ms, state.eventKindToPlace, state.eventDataToPlace.copy())], false));
+    }
+    else
+    {
+      state.performCommand(new AddNotesCommand([
+        new SongNoteData(pending.ms, pending.column, 0, state.noteKindToPlace, ChartEditorNoteUtil.cloneNoteParams(state.noteParamsToPlace))
+      ], false));
+    }
+  }
+  #end
+
   /**
    * Handle display of the mouse cursor.
    */
@@ -953,6 +977,14 @@ class ChartEditorCursorHandler
               }
               // Click a blank space to place a note and select it.
 
+              #if mobile
+              touchPending = {
+                ms: cursorSnappedMs,
+                column: cursorColumn,
+                isEvent: cursorGridPos == eventColumn
+              };
+              touchScrolling = false;
+              #else
               if (cursorGridPos == eventColumn)
               {
                 // Create an event and place it in the chart.
@@ -976,6 +1008,7 @@ class ChartEditorCursorHandler
 
                 state.currentPlaceNoteData = newNoteData;
               }
+              #end
             }
           }
         }

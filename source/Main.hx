@@ -68,10 +68,6 @@ class Main extends Sprite
     // Add this signal so the player can toggle the debug display using a hotkey.
     FlxG.signals.postUpdate.add(handleDebugDisplayKeys);
 
-    #if mobile
-    FlxG.signals.postUpdate.add(handleTouchCursor);
-    #end
-
     // Add this signal so we can reposition and resize the memory and fps counter.
     FlxG.signals.preUpdate.add(repositionCounters.bind(true));
 
@@ -134,13 +130,6 @@ class Main extends Sprite
 
     Preferences.debugDisplay = nextMode;
   }
-
-  #if mobile
-  function handleTouchCursor():Void
-  {
-    if (Preferences.touchCursor && !FlxG.mouse.visible) funkin.input.Cursor.show();
-  }
-  #end
 
   function repositionCounters(lerp:Bool):Void
   {

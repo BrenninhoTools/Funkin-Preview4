@@ -56,6 +56,15 @@ class ChartEditorGridInteractionHandler
     state.lastGridClickTime = now;
     if (!isDouble) return;
 
+    #if mobile
+    if (clickedNote != null)
+    {
+      state.dragTargetNote = null;
+      state.performCommand(new funkin.ui.debug.charting.commands.notes.RemoveNotesCommand([clickedNote]));
+      return;
+    }
+    #end
+
     if (clickedEvent != null)
     {
       // The first click already selected the event and its chain.
