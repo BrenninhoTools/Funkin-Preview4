@@ -17,9 +17,6 @@ import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatState;
 import funkin.graphics.shaders.HSVShader;
 import funkin.input.Controls;
-#if FEATURE_NEWGROUNDS
-import funkin.api.newgrounds.NewgroundsClient;
-#end
 #if FEATURE_TOUCH_CONTROLS
 import funkin.util.TouchUtil;
 import funkin.touch.ui.FunkinBackButton;
@@ -76,6 +73,9 @@ class OptionsState extends MusicBeatState
     add(optionsCodex);
 
     var options:OptionsMenu = optionsCodex.addPage(Options, new OptionsMenu());
+    #if mobile
+    var mobileOptions:MobileOptionsMenu = optionsCodex.addPage(MobileOptions, new MobileOptionsMenu());
+    #end
     var preferences:PreferencesMenu = optionsCodex.addPage(Preferences, new PreferencesMenu());
     var controls:ControlsMenu = optionsCodex.addPage(Controls, new ControlsMenu());
     #if FEATURE_LAG_ADJUSTMENT
@@ -91,6 +91,9 @@ class OptionsState extends MusicBeatState
       options.onExit.add(exitToMainMenu);
       controls.onExit.add(exitControls);
       preferences.onExit.add(optionsCodex.switchPage.bind(Options));
+      #if mobile
+      mobileOptions.onExit.add(optionsCodex.switchPage.bind(Options));
+      #end
       #if FEATURE_LAG_ADJUSTMENT
       offsets.onExit.add(exitOffsets);
       #end
@@ -254,6 +257,9 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     super();
     add(items = new TextMenuList());
 
+    #if mobile
+    createItem('MOBILE OPTIONS', function() codex.switchPage(MobileOptions));
+    #end
     createItem('PREFERENCES', function() codex.switchPage(Preferences));
     #if FEATURE_TOUCH_CONTROLS
     if (ControlsHandler.hasExternalInputDevice)
@@ -304,40 +310,6 @@ class OptionsMenu extends Page<OptionsMenuPageName>
         transition: Throbber
       });
     });
-    #if FEATURE_NEWGROUNDS
-    if (NewgroundsClient.instance.isLoggedIn())
-    {
-      createItem('LOGOUT OF NG', function()
-      {
-        NewgroundsClient.instance.logout(function()
-        {
-          // Reset the options menu when logout succeeds.
-          // This means the login option will be displayed.
-          FlxG.resetState();
-        }, function()
-        {
-          FlxG.log.warn('Newgrounds logout failed!');
-        });
-      });
-    }
-    else
-    {
-      createItem('LOGIN TO NG', function()
-      {
-        NewgroundsClient.instance.login(function()
-        {
-          // Reset the options menu when login succeeds.
-          // This means the logout option will be displayed.
-          // NOTE: If the user presses login and opens the browser,
-          // then navigates the UI
-          FlxG.resetState();
-        }, function()
-        {
-          FlxG.log.warn('Newgrounds login failed!');
-        });
-      });
-    }
-    #end
 
     // Create an object for the camera to track.
     camFocusPoint = new FlxObject(0, 0, 140, 70);
@@ -470,6 +442,7 @@ enum abstract OptionsMenuPageName(String) to PageName
   public var Colors = 'colors';
   public var Mods = 'mods';
   public var Preferences = 'preferences';
+  public var MobileOptions = 'mobileOptions';
   public var Offsets = 'offsets';
   public var SaveData = 'saveData';
 }

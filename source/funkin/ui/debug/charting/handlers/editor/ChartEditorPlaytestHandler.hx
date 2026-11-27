@@ -9,7 +9,9 @@ import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.song.Song;
 import funkin.save.Save;
+#if FEATURE_CAMERA_EDITOR
 import funkin.ui.debug.cameraeditor.CameraEditorState;
+#end
 import funkin.ui.debug.charting.util.ChartEditorScaleMode;
 import funkin.util.FlxStateUtil;
 import haxe.io.Path;
@@ -336,10 +338,12 @@ class ChartEditorPlaytestHandler
         targetSongPosition: startTimestamp,
       };
 
+      #if FEATURE_CAMERA_EDITOR
       Transition.switchState(() -> new CameraEditorState(cameraEditorParams), {
         assetQuery: Transition.NO_ASSETS, // CameraEditorState.queryAssets.bind(_, cameraEditorParams),
         transition: BlackScreen(None, Fade(South))
       });
+      #end
     }
   }
 

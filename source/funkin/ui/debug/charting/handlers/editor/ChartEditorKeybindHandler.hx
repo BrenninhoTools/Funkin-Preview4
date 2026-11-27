@@ -84,6 +84,44 @@ class ChartEditorKeybindHandler
       shouldSnap = true;
     }
 
+    #if FLX_TOUCH
+    if (FlxG.touches.list.length >= 2)
+    {
+      var first = FlxG.touches.list[0];
+      var second = FlxG.touches.list[1];
+
+      if (state.selectionBoxStartPos != null)
+      {
+        if (state.selectionBoxSprite != null) state.selectionBoxSprite.visible = false;
+        state.selectionBoxStartPos.put();
+        state.selectionBoxStartPos = null;
+      }
+
+      var distanceX:Float = first.viewX - second.viewX;
+      var distanceY:Float = first.viewY - second.viewY;
+      var distance:Float = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+
+      if (touchPinchDistance < 0 || first.justPressed || second.justPressed)
+      {
+        touchPinchDistance = distance;
+      }
+      else if (Math.abs(distance - touchPinchDistance) >= TOUCH_PINCH_STEP)
+      {
+        state.zoomLevelIndex += distance > touchPinchDistance ? 1 : -1;
+        touchPinchDistance = distance;
+      }
+      else
+      {
+        scrollAmount = -((first.deltaViewY + second.deltaViewY) / 2) * screenDirection;
+        shouldPause = true;
+      }
+    }
+    else
+    {
+      touchPinchDistance = -1;
+    }
+    #end
+
     // Up Arrow = Scroll Up
     if (state.upKeyHandler.activated && state.currentLiveInputStyle != WASDKeys)
     {
@@ -542,6 +580,13 @@ class ChartEditorKeybindHandler
     {
       state.quitChartEditor(true);
     }
+
+    #if android
+    if (FlxG.android.justReleased.BACK && !state.isHaxeUIDialogOpen)
+    {
+      state.quitChartEditor(true);
+    }
+    #end
   }
 
   public static function handleListKeybinds(state:ChartEditorState):Void
@@ -602,6 +647,12 @@ class ChartEditorKeybindHandler
   static var zoomWheelAmount:Float = 0;
 
   static var lastZoomStepTime:Float = 0;
+
+  #if FLX_TOUCH
+  static final TOUCH_PINCH_STEP:Float = 90;
+
+  static var touchPinchDistance:Float = -1;
+  #end
   static var lastZoomWheelTime:Float = 0;
 
   static function handleZoomWheel(state:ChartEditorState, delta:Float):Void

@@ -187,7 +187,11 @@ class Save implements ConsoleClass implements ISerializable
         // Reasonable defaults.
         screenTimeout: false,
         noAds: false,
-        renderScale: null
+        renderScale: null,
+        invisibleHitbox: false,
+        invisiblePauseButton: false,
+        chartEditorInPause: false,
+        touchCursor: false
       },
       #end
       mods: {
@@ -1633,6 +1637,14 @@ typedef SaveDataMobileOptions =
    * @default `null`
    */
   var renderScale:Null<Float>;
+
+  var invisibleHitbox:Bool;
+
+  var invisiblePauseButton:Bool;
+
+  var chartEditorInPause:Bool;
+
+  var touchCursor:Bool;
 }
 #end
 

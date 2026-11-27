@@ -1191,9 +1191,38 @@ class PlayState extends MusicBeatSubState
     return true;
   }
 
+  #if FEATURE_CHART_EDITOR
+  public function openChartEditor():Void
+  {
+    disableKeys = true;
+    persistentUpdate = false;
+
+    if (currentStage != null) this.remove(currentStage);
+    var chartEditorParams = {
+      loadFromTemplate: currentSong.id,
+      targetSongDifficulty: currentDifficulty,
+      targetSongVariation: currentVariation,
+      targetSongPosition: Conductor.instance.songPosition
+    };
+
+    Transition.switchState(() -> new ChartEditorState(chartEditorParams), {
+      assetQuery: ChartEditorState.queryAssets.bind(_, chartEditorParams),
+      transition: BlackScreen(None, Fade(South))
+    });
+  }
+  #end
+
   override public function draw():Void
   {
     if (criticalFailure) return;
+
+    #if (FEATURE_TOUCH_CONTROLS && mobile)
+    if (Preferences.invisiblePauseButton && pauseButton != null)
+    {
+      pauseButton.alpha = 0;
+      pauseCircle.alpha = 0;
+    }
+    #end
 
     super.draw();
   }
@@ -3547,18 +3576,7 @@ class PlayState extends MusicBeatSubState
       }
       else
       {
-        if (currentStage != null) this.remove(currentStage);
-        var chartEditorParams = {
-          loadFromTemplate: currentSong.id,
-          targetSongDifficulty: currentDifficulty,
-          targetSongVariation: currentVariation,
-          targetSongPosition: Conductor.instance.songPosition
-        };
-
-        Transition.switchState(() -> new ChartEditorState(chartEditorParams), {
-          assetQuery: ChartEditorState.queryAssets.bind(_, chartEditorParams),
-          transition: BlackScreen(None, Fade(South))
-        });
+        openChartEditor();
       }
     }
     #end

@@ -74,6 +74,13 @@ class PauseSubState extends MusicBeatSubState
       callback: enablePracticeMode,
       filter: () -> !(PlayState.instance?.isPracticeMode ?? false)
     },
+    #if (FEATURE_CHART_EDITOR && mobile)
+    {
+      text: 'Chart Editor',
+      callback: openChartEditor,
+      filter: () -> Preferences.chartEditorInPause
+    },
+    #end
     {
       text: 'Exit to Menu',
       callback: quitToMenu
@@ -1335,6 +1342,20 @@ class PauseSubState extends MusicBeatSubState
       shouldPurgeCache: wasStoryMode
     });
   }
+
+  #if (FEATURE_CHART_EDITOR && mobile)
+  static function openChartEditor(state:PauseSubState):Void
+  {
+    state.allowInput = false;
+
+    #if FEATURE_MOBILE_ADVERTISEMENTS
+    AdMobUtil.removeBanner();
+    #end
+
+    PlayState.instance.deathCounter = 0;
+    PlayState.instance.openChartEditor();
+  }
+  #end
 
   /**
    * Quit the game and return to the chart editor.

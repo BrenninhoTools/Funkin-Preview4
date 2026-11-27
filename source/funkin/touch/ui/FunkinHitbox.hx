@@ -87,6 +87,8 @@ class FunkinHint extends FunkinButton
    */
   public var columnWidth:Float = 0.0;
 
+  public var invisible:Bool = false;
+
   /**
    * Creates a new `FunkinHint` object.
    *
@@ -212,6 +214,8 @@ class FunkinHint extends FunkinButton
 
   override public function draw():Void
   {
+    if (invisible) return;
+
     super.draw();
 
     if (label != null && label.visible)
@@ -459,6 +463,13 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
             createHintTransparentNote(xPos + i * hintWidth + noteSpacing * i, yPos, hintsNoteDirections[i % hintsNoteDirections.length], hintWidth, hintHeight)
           );
         }
+    }
+    #end
+
+    #if mobile
+    if (schemeOverride == null && Preferences.invisibleHitbox)
+    {
+      forEach((hint:FunkinHint) -> hint.invisible = true);
     }
     #end
 

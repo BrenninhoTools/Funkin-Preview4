@@ -639,6 +639,67 @@ class Preferences
     return value;
   }
 
+  public static var invisibleHitbox(get, set):Bool;
+
+  static function get_invisibleHitbox():Bool
+  {
+    return Save?.instance?.mobileOptions?.invisibleHitbox ?? false;
+  }
+
+  static function set_invisibleHitbox(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.mobileOptions.invisibleHitbox = value;
+    Save.system.flush();
+    return value;
+  }
+
+  public static var invisiblePauseButton(get, set):Bool;
+
+  static function get_invisiblePauseButton():Bool
+  {
+    return Save?.instance?.mobileOptions?.invisiblePauseButton ?? false;
+  }
+
+  static function set_invisiblePauseButton(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.mobileOptions.invisiblePauseButton = value;
+    Save.system.flush();
+    return value;
+  }
+
+  public static var chartEditorInPause(get, set):Bool;
+
+  static function get_chartEditorInPause():Bool
+  {
+    return Save?.instance?.mobileOptions?.chartEditorInPause ?? false;
+  }
+
+  static function set_chartEditorInPause(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.mobileOptions.chartEditorInPause = value;
+    Save.system.flush();
+    return value;
+  }
+
+  public static var touchCursor(get, set):Bool;
+
+  static function get_touchCursor():Bool
+  {
+    return Save?.instance?.mobileOptions?.touchCursor ?? false;
+  }
+
+  static function set_touchCursor(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.mobileOptions.touchCursor = value;
+    Save.system.flush();
+    if (!value) funkin.input.Cursor.hide();
+    return value;
+  }
+
   public static inline final RENDER_SCALE_BALANCED:Float = 1.85;
   public static inline final RENDER_SCALE_HIGH:Float = 2;
   public static inline final RENDER_SCALE_NATIVE:Float = 3;

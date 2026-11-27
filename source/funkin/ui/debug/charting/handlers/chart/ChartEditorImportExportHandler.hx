@@ -32,6 +32,10 @@ class ChartEditorImportExportHandler
    */
   public static final BACKUPS_PATH:String = './backups/charts/';
 
+  #if mobile
+  public static final MOBILE_EXPORT_PATH:String = './charts/';
+  #end
+
   /**
    * Loads an FNFC chart into the Chart Editor from its parsed contents.
    *
@@ -393,6 +397,19 @@ class ChartEditorImportExportHandler
         if (onCancelCb != null) onCancelCb();
       };
 
+      #if mobile
+      var mobilePath:String = Path.join([MOBILE_EXPORT_PATH, '${state.currentSongId}.${Constants.EXT_CHART}']);
+      try
+      {
+        FileUtil.createDirIfNotExists(MOBILE_EXPORT_PATH);
+        FileUtil.saveFilesAsZIPToPath(zipEntries, mobilePath, Force);
+        onSave([mobilePath]);
+      }
+      catch (e)
+      {
+        onCancel();
+      }
+      #else
       trace('Exporting to user-defined location...');
       try
       {
@@ -401,6 +418,7 @@ class ChartEditorImportExportHandler
       catch (e)
       {
       }
+      #end
     }
   }
 
@@ -435,6 +453,28 @@ class ChartEditorImportExportHandler
       if (onCancelCb != null) onCancelCb();
     };
 
+    #if mobile
+    var mobileFolder:String = Path.join([MOBILE_EXPORT_PATH, state.currentSongId]);
+    try
+    {
+      FileUtil.createDirIfNotExists(mobileFolder);
+      var paths:Array<String> = [];
+      for (entry in zipEntries)
+      {
+        var entryData:Null<Bytes> = entry.data;
+        if (entryData == null) continue;
+        var entryPath:String = Path.join([mobileFolder, entry.fileName]);
+        FileUtil.createDirIfNotExists(Path.directory(entryPath));
+        FileUtil.writeBytesToPath(entryPath, entryData, Force);
+        paths.push(entryPath);
+      }
+      onSave(paths);
+    }
+    catch (e)
+    {
+      onCancel();
+    }
+    #else
     trace('Exporting to user-defined location...');
     try
     {
@@ -443,6 +483,7 @@ class ChartEditorImportExportHandler
     catch (e)
     {
     }
+    #end
   }
 }
 #end

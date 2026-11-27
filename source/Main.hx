@@ -60,6 +60,10 @@ class Main extends Sprite
     // Add this signal so the player can toggle the debug display using a hotkey.
     FlxG.signals.postUpdate.add(handleDebugDisplayKeys);
 
+    #if mobile
+    FlxG.signals.postUpdate.add(handleTouchCursor);
+    #end
+
     // Add this signal so we can reposition and resize the memory and fps counter.
     FlxG.signals.preUpdate.add(repositionCounters.bind(true));
 
@@ -91,7 +95,7 @@ class Main extends Sprite
     #end
 
     #if !html5
-    FlxG.scaleMode = new FullScreenScaleMode();
+    FlxG.scaleMode = new FullScreenScaleMode(false);
     #end
 
     // Reposition and resize the memory and fps counter without lerping.
@@ -123,6 +127,13 @@ class Main extends Sprite
     Preferences.debugDisplay = nextMode;
   }
 
+  #if mobile
+  function handleTouchCursor():Void
+  {
+    if (Preferences.touchCursor && !FlxG.mouse.visible) funkin.input.Cursor.show();
+  }
+  #end
+
   function repositionCounters(lerp:Bool):Void
   {
     // Calling this so it gets scaled based on the resolution of the game and device's resolution.
@@ -134,7 +145,7 @@ class Main extends Sprite
 
       if (FlxG.game != null)
       {
-        final thypos:Float = Math.max(FullScreenScaleMode.notchSize.x, 10);
+        final thypos:Float = Math.max(FullScreenScaleMode.notchSize.x, 10 * scale);
 
         if (lerp)
         {

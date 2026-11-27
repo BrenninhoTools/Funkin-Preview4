@@ -1,6 +1,6 @@
 package funkin.ui.debug.cameraeditor.handlers;
 
-#if FEATURE_CHART_EDITOR
+#if FEATURE_CAMERA_EDITOR
 import haxe.ui.animation.AnimationBuilder;
 import haxe.ui.components.Button;
 import haxe.ui.containers.HBox;
