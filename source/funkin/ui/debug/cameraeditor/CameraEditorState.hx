@@ -1377,6 +1377,10 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   override public function update(elapsed:Float):Void
   {
+    #if android
+    if (FlxG.android.justReleased.BACK && exitConfirmDialog == null) onMenubarExit(null);
+    #end
+
     editSoundPlayed = false;
     funkin.ui.debug.cameraeditor.components.BaseEventContainer.editorFrame++;
     funkin.util.HaxeUITextHistory.update();

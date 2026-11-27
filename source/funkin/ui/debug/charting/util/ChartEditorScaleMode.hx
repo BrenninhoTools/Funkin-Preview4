@@ -27,8 +27,8 @@ class ChartEditorScaleMode extends BaseScaleMode
   {
     super();
     this.uiScale = uiScale;
-    horizontalAlign = LEFT;
-    verticalAlign = TOP;
+    horizontalAlign = CENTER;
+    verticalAlign = CENTER;
   }
 
   /**
@@ -36,8 +36,8 @@ class ChartEditorScaleMode extends BaseScaleMode
    */
   public static function windowMaxUIScale():Float
   {
-    var width:Int = FlxG.stage.stageWidth;
-    var height:Int = FlxG.stage.stageHeight;
+    var width:Float = Math.min(FlxG.stage.stageWidth, FlxG.stage.stageHeight * MIN_WIDTH / MIN_HEIGHT);
+    var height:Float = Math.min(FlxG.stage.stageHeight, width * MIN_HEIGHT / MIN_WIDTH);
     return Math.min(MAX_UI_SCALE, Math.min(width / MIN_WIDTH, height / MIN_HEIGHT));
   }
 
@@ -88,11 +88,13 @@ class ChartEditorScaleMode extends BaseScaleMode
 
   override public function onMeasure(width:Int, height:Int):Void
   {
-    var fit:Float = Math.min(uiScale, Math.min(width / MIN_WIDTH, height / MIN_HEIGHT));
+    var areaWidth:Int = Std.int(Math.min(width, Math.round(height * MIN_WIDTH / MIN_HEIGHT)));
+    var areaHeight:Int = Std.int(Math.min(height, Math.round(areaWidth * MIN_HEIGHT / MIN_WIDTH)));
+    var fit:Float = Math.min(uiScale, Math.min(areaWidth / MIN_WIDTH, areaHeight / MIN_HEIGHT));
     if (fit <= 0) fit = 1;
-    setGlobalSize(Std.int(Math.max(1, Math.round(width / fit))), Std.int(Math.max(1, Math.round(height / fit))));
+    setGlobalSize(Std.int(Math.max(1, Math.round(areaWidth / fit))), Std.int(Math.max(1, Math.round(areaHeight / fit))));
 
-    updateGameSize(width, height);
+    updateGameSize(areaWidth, areaHeight);
     updateDeviceSize(width, height);
     updateScaleOffset();
     updateGamePosition();

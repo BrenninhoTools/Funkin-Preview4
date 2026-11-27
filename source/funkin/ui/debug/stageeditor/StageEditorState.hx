@@ -663,6 +663,12 @@ class StageEditorState extends UIState
 
     if (!isCursorOverHaxeUI) handleTrackpadScroll();
     handleMiddleMousePan();
+    #if FLX_TOUCH
+    handleTouchGestures();
+    #end
+    #if android
+    if (FlxG.android.justReleased.BACK && exitConfirmDialog == null) onMenuItemClick('exit');
+    #end
     MouseUtil.updateMiddleMouseDragCursor(middleMousePanPosition != null);
 
     // key shortcuts and inputs
@@ -1097,6 +1103,22 @@ class StageEditorState extends UIState
     camFollow.x += (dx * TRACKPAD_PAN_SCALE) / camGame.zoom;
     camFollow.y -= (dy * TRACKPAD_PAN_SCALE) / camGame.zoom;
   }
+
+  #if FLX_TOUCH
+  function handleTouchGestures():Void
+  {
+    if (!funkin.util.TouchGestureUtil.update()) return;
+
+    camFollow.x -= funkin.util.TouchGestureUtil.panX / camGame.zoom;
+    camFollow.y -= funkin.util.TouchGestureUtil.panY / camGame.zoom;
+
+    if (funkin.util.TouchGestureUtil.zoomRatio != 1)
+    {
+      camGame.zoom = Math.min(10.0, Math.max(0.11, camGame.zoom * funkin.util.TouchGestureUtil.zoomRatio));
+      updateBGSize();
+    }
+  }
+  #end
 
   var middleMousePanPosition:FlxPoint = null;
 

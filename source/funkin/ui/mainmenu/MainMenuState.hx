@@ -67,6 +67,10 @@ class MainMenuState extends MusicBeatState
   #if mobile
   var gyroPan:Null<FlxPoint>;
   #end
+  #if (mobile && (FEATURE_CHART_EDITOR || FEATURE_ANIMATION_EDITOR || FEATURE_STAGE_EDITOR || FEATURE_CAMERA_EDITOR))
+  var debugButton:Null<FlxSprite>;
+  var debugButtonText:Null<flixel.text.FlxText>;
+  #end
   var overrideMusic:Bool = false;
   var uiStateMachine:UIStateMachine = new UIStateMachine();
   var canInteract(get, never):Bool;
@@ -331,6 +335,10 @@ class MainMenuState extends MusicBeatState
       addOptionsButton(35, FlxG.height - 210, goOptions);
     }
 
+    #if (FEATURE_CHART_EDITOR || FEATURE_ANIMATION_EDITOR || FEATURE_STAGE_EDITOR || FEATURE_CAMERA_EDITOR)
+    createDebugButton();
+    #end
+
     backButton?.onConfirmStart.add(() ->
     {
       #if FEATURE_DEBUG_MENU
@@ -522,6 +530,18 @@ class MainMenuState extends MusicBeatState
     }, fadeOutDuration, {
       ease: FlxEase.quadOut
     });
+    #if (FEATURE_CHART_EDITOR || FEATURE_ANIMATION_EDITOR || FEATURE_STAGE_EDITOR || FEATURE_CAMERA_EDITOR)
+    if (debugButton != null) FlxTween.tween(debugButton, {
+      alpha: 0
+    }, fadeOutDuration, {
+      ease: FlxEase.quadOut
+    });
+    if (debugButtonText != null) FlxTween.tween(debugButtonText, {
+      alpha: 0
+    }, fadeOutDuration, {
+      ease: FlxEase.quadOut
+    });
+    #end
     #end
 
     FlxTimer.wait(fadeOutDuration, () ->
@@ -575,8 +595,57 @@ class MainMenuState extends MusicBeatState
       backButton.active = canInteract || backButton.confirming;
       backButton.enabled = backButton.active;
     }
+    #if (FEATURE_CHART_EDITOR || FEATURE_ANIMATION_EDITOR || FEATURE_STAGE_EDITOR || FEATURE_CAMERA_EDITOR)
+    handleDebugButton();
+    #end
     #end
   }
+
+  #if (mobile && (FEATURE_CHART_EDITOR || FEATURE_ANIMATION_EDITOR || FEATURE_STAGE_EDITOR || FEATURE_CAMERA_EDITOR))
+  function createDebugButton():Void
+  {
+    final size:Int = 140;
+    final shape:openfl.display.Shape = new openfl.display.Shape();
+    shape.graphics.lineStyle(5, 0xFFFFFF, 0.9);
+    shape.graphics.beginFill(0x000000, 0.55);
+    shape.graphics.drawRoundRect(3, 3, size - 6, size - 6, 40, 40);
+    shape.graphics.endFill();
+
+    final bitmap:openfl.display.BitmapData = new openfl.display.BitmapData(size, size, true, 0);
+    bitmap.draw(shape);
+
+    final button:FlxSprite = new FlxSprite(FlxG.width - size - 35, (FlxG.height - size) / 2).loadGraphic(bitmap);
+    button.scrollFactor.set();
+    if (camControls != null) button.cameras = [camControls];
+    add(button);
+    debugButton = button;
+
+    final label:flixel.text.FlxText = new flixel.text.FlxText(button.x, button.y, size, 'DEBUG', 30);
+    label.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 30, FlxColor.WHITE, CENTER, OUTLINE, FlxColor.BLACK);
+    label.borderSize = 2;
+    label.y = button.y + (size - label.height) / 2;
+    label.scrollFactor.set();
+    if (camControls != null) label.cameras = [camControls];
+    add(label);
+    debugButtonText = label;
+  }
+
+  function handleDebugButton():Void
+  {
+    final button:Null<FlxSprite> = debugButton;
+    if (button == null || !canInteract) return;
+
+    final camera = camControls ?? FlxG.camera;
+    final held:Bool = TouchUtil.pressed && TouchUtil.overlapsComplex(button, camera);
+    button.alpha = held ? 0.6 : 1;
+
+    if (TouchUtil.pressAction(button, camera))
+    {
+      FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu').toString());
+      startExitState(() -> new funkin.ui.debug.DebugMenuState(), Transition.NO_ASSETS);
+    }
+  }
+  #end
 
   function handleInputs():Void
   {

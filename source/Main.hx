@@ -27,6 +27,10 @@ class Main extends Sprite
   {
     super();
 
+    #if android
+    funkin.util.CLIUtil.resetWorkingDir();
+    #end
+
     if (stage != null)
     {
       init();

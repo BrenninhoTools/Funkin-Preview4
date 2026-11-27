@@ -2,6 +2,10 @@ package funkin.ui.options;
 
 #if mobile
 import funkin.touch.ui.FunkinHitbox.FunkinHitboxControlSchemes;
+#if android
+import funkin.util.mobile.StorageUtil;
+import funkin.util.mobile.StorageUtil.StorageType;
+#end
 
 class MobileOptionsMenu extends PreferencesMenu
 {
@@ -32,6 +36,15 @@ class MobileOptionsMenu extends PreferencesMenu
     {
       Preferences.touchCursor = value;
     }, Preferences.touchCursor);
+    #if android
+    createPrefItemEnum('Storage Type', 'Where mods, charts and backups are kept. External uses the .FNFPreview4 folder.', [
+      "Data" => StorageType.Data,
+      "External" => StorageType.External
+    ], function(key:String, value:StorageType):Void
+    {
+      StorageUtil.switchTo(value);
+    }, StorageUtil.storageType == StorageType.External ? "External" : "Data");
+    #end
   }
 }
 #end

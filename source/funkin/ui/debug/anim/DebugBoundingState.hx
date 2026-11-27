@@ -330,6 +330,24 @@ class DebugBoundingState extends FlxState
 
     MouseUtil.mouseCamDrag();
     if (!haxeUIFocused) handleTrackpadScroll();
+    #if FLX_TOUCH
+    if (funkin.util.TouchGestureUtil.update())
+    {
+      FlxG.camera.scroll.x -= funkin.util.TouchGestureUtil.panX / FlxG.camera.zoom;
+      FlxG.camera.scroll.y -= funkin.util.TouchGestureUtil.panY / FlxG.camera.zoom;
+      FlxG.camera.zoom = Math.min(10.0, Math.max(0.1, FlxG.camera.zoom * funkin.util.TouchGestureUtil.zoomRatio));
+    }
+    #end
+    #if android
+    if (FlxG.android.justReleased.BACK)
+    {
+      Cursor.hide();
+      funkin.ui.transition.Transition.switchState(() -> new funkin.ui.debug.DebugMenuState(), {
+        assetQuery: funkin.ui.transition.Transition.NO_ASSETS,
+        transition: BlackScreen(None, None)
+      });
+    }
+    #end
 
     // bg.scale.x = FlxG.camera.zoom;
     // bg.scale.y = FlxG.camera.zoom;

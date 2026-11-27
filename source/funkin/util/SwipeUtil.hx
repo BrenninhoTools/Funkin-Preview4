@@ -101,7 +101,9 @@ class SwipeUtil
   public static var flickAny(get, never):Bool;
 
   static final DEFAULT_SWIPE_THRESHOLD:Float = 100;
-  static final MIN_SWIPE_DISTANCE:Float = 20;
+  static final MIN_SWIPE_DISTANCE:Float = 40;
+
+  static final MAX_SWIPE_DURATION:Float = 1.0;
 
   /**
    * Updates the swipe threshold based on the provided group.
@@ -202,7 +204,7 @@ class SwipeUtil
   static inline function get_justSwipedUp():Bool
   {
     #if FEATURE_TOUCH_CONTROLS
-    final swipe:FlxSwipe = (FlxG.swipes.length > 0) ? FlxG.swipes[0] : null;
+    final swipe:FlxSwipe = latestSwipe();
     return (swipe?.degrees > 45 && swipe?.degrees < 135 && swipe?.distance > MIN_SWIPE_DISTANCE);
     #else
     return false;
@@ -213,7 +215,7 @@ class SwipeUtil
   static inline function get_justSwipedRight():Bool
   {
     #if FEATURE_TOUCH_CONTROLS
-    final swipe:FlxSwipe = (FlxG.swipes.length > 0) ? FlxG.swipes[0] : null;
+    final swipe:FlxSwipe = latestSwipe();
     return (swipe?.degrees > -45 && swipe?.degrees < 45 && swipe?.distance > MIN_SWIPE_DISTANCE);
     #else
     return false;
@@ -224,7 +226,7 @@ class SwipeUtil
   static inline function get_justSwipedLeft():Bool
   {
     #if FEATURE_TOUCH_CONTROLS
-    final swipe:FlxSwipe = (FlxG.swipes.length > 0) ? FlxG.swipes[0] : null;
+    final swipe:FlxSwipe = latestSwipe();
     return ((swipe?.degrees > 135 || swipe?.degrees < -135) && swipe?.distance > MIN_SWIPE_DISTANCE);
     #else
     return false;
@@ -235,7 +237,7 @@ class SwipeUtil
   static inline function get_justSwipedDown():Bool
   {
     #if FEATURE_TOUCH_CONTROLS
-    final swipe:FlxSwipe = (FlxG.swipes.length > 0) ? FlxG.swipes[0] : null;
+    final swipe:FlxSwipe = latestSwipe();
     return (swipe?.degrees > -135 && swipe?.degrees < -45 && swipe?.distance > MIN_SWIPE_DISTANCE);
     #else
     return false;
@@ -309,6 +311,19 @@ class SwipeUtil
   {
     return flickUp || flickRight || flickLeft || flickDown;
   }
+
+  #if FEATURE_TOUCH_CONTROLS
+  static function latestSwipe():Null<FlxSwipe>
+  {
+    var i:Int = FlxG.swipes.length;
+    while (i-- > 0)
+    {
+      final swipe:FlxSwipe = FlxG.swipes[i];
+      if (swipe != null && swipe.duration <= MAX_SWIPE_DURATION) return swipe;
+    }
+    return null;
+  }
+  #end
 
   /**
    * Calls the destroy function from both the global mouse and the touch manager.

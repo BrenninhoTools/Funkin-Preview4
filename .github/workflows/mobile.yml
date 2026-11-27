@@ -106,11 +106,46 @@ jobs:
         if: steps.cache-lime.outputs.cache-hit != 'true'
         run: haxelib run lime rebuild android -release -nocffi -arm64
 
+      - name: Restore keystore
+        id: cache-keystore
+        uses: actions/cache@v4
+        with:
+          path: ~/.android-ci-keystore
+          key: android-ci-keystore-v1
+
+      - name: Setup keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          mkdir -p ~/.android-ci-keystore
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > ~/.android-ci-keystore/release.keystore
+          elif [ ! -f ~/.android-ci-keystore/release.keystore ]; then
+            keytool -genkeypair -keystore ~/.android-ci-keystore/release.keystore -alias funkin -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=FNF Preview 4"
+          fi
+
       - name: Populate .env
+        env:
+          KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         run: |
           touch .env
           echo "API_NG_APP_ID=${{ secrets.API_NG_APP_ID }}" >> .env
           echo "API_NG_ENC_KEY=${{ secrets.API_NG_ENC_KEY }}" >> .env
+          echo "KEYSTORE_PATH=$HOME/.android-ci-keystore/release.keystore" >> .env
+          echo "KEYSTORE_ALIAS=${KEYSTORE_ALIAS:-funkin}" >> .env
+          echo "KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD:-android}" >> .env
+
+      - name: Restore Gradle cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-android-${{ hashFiles('hmm.json') }}-${{ github.sha }}
+          restore-keys: |
+            gradle-android-${{ hashFiles('hmm.json') }}-
+            gradle-android-
 
       - name: Restore Asset Cache
         id: cache-assets
@@ -133,6 +168,15 @@ jobs:
         with:
           path: ~/asset-store
           key: ${{ steps.cache-assets.outputs.cache-primary-key }}
+
+      - name: Restore ASTC cache
+        uses: actions/cache@v4
+        with:
+          path: astc-textures
+          key: astc-${{ hashFiles('astc-compression-data.json', 'tools/optimize_assets.py') }}-${{ hashFiles('assets/**/*.png') }}
+          restore-keys: |
+            astc-${{ hashFiles('astc-compression-data.json', 'tools/optimize_assets.py') }}-
+            astc-
 
       - name: Build
         run: haxelib run lime build android -release -arm64 -DGITHUB_BUILD -DNO_FEATURE_MOBILE_ADVERTISEMENTS -DNO_FEATURE_MOBILE_IAP

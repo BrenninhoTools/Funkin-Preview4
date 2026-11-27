@@ -137,7 +137,11 @@ class TouchUtil
    */
   public static function pressAction(?object:FlxBasic, ?camera:FlxCamera, useOverlapsComplex:Bool = true):Bool
   {
-    if (TouchUtil.touch == null || (TouchUtil.touch != null && TouchUtil.touch.ticksDeltaSincePress > 200)) return false;
+    if (TouchUtil.touch == null || TouchUtil.touch.ticksDeltaSincePress > TAP_MAX_TICKS) return false;
+
+    #if mobile
+    if (movedSincePress(TouchUtil.touch)) return false;
+    #end
 
     if (object == null && camera == null)
     {
@@ -151,6 +155,19 @@ class TouchUtil
 
     return false;
   }
+
+  static final TAP_MAX_TICKS:Float = 400;
+
+  static final TAP_SLOP:Float = 32;
+
+  #if mobile
+  static function movedSincePress(touch:FlxTouch):Bool
+  {
+    final distanceX:Float = touch.viewX - touch.justPressedPosition.x;
+    final distanceY:Float = touch.viewY - touch.justPressedPosition.y;
+    return distanceX * distanceX + distanceY * distanceY > TAP_SLOP * TAP_SLOP;
+  }
+  #end
 
   // weird mix between "looks weird" and "looks neat" but i'll keep it for now -Zack
 
@@ -173,12 +190,15 @@ class TouchUtil
   @:noCompletion
   static function get_touch():FlxTouch
   {
+    var latest:Null<FlxTouch> = null;
     for (touch in FlxG.touches.list)
     {
-      if (touch != null) return touch;
+      if (touch == null) continue;
+      if (touch.justPressed || touch.justReleased) return touch;
+      if (latest == null || touch.justPressedTimeInTicks > latest.justPressedTimeInTicks) latest = touch;
     }
 
-    return FlxG.touches.getFirst();
+    return latest ?? FlxG.touches.getFirst();
   }
   #else
   @:noCompletion
