@@ -83,7 +83,7 @@ class FunkinPreloader extends FlxBasePreloader
   /**
    * Display takes this long (in seconds) to fade in.
    */
-  static final FADE_TIME:Float = 2.5;
+  static final FADE_TIME:Float = #if mobile 0.6 #else 2.5 #end;
 
   // Ratio between window size and BASE_WIDTH
   var ratio:Float = 0;

@@ -97,6 +97,8 @@ class DebugBoundingState extends FlxState
 
     offsetAnimationDropdown = offsetEditorDialog.findComponent("animationDropdown", DropDown);
 
+    addSaveButtons();
+
     offsetEditorDialog.cameras = [hudCam];
     offsetEditorDialog.closable = false;
 
@@ -394,6 +396,42 @@ class DebugBoundingState extends FlxState
     FlxG.camera.scroll.y -= (dy * TRACKPAD_PAN_SCALE) / FlxG.camera.zoom;
   }
 
+  function addSaveButtons():Void
+  {
+    final anchor:Null<DropDown> = offsetEditorDialog.findComponent("characterDropdown", DropDown);
+    final content:Null<haxe.ui.core.Component> = anchor?.parentComponent;
+    if (content == null) return;
+
+    final header:haxe.ui.components.SectionHeader = new haxe.ui.components.SectionHeader();
+    header.text = 'File';
+
+    final row:haxe.ui.containers.HBox = new haxe.ui.containers.HBox();
+
+    final saveButton:haxe.ui.components.Button = new haxe.ui.components.Button();
+    saveButton.text = 'Save';
+    saveButton.width = 120;
+    saveButton.onClick = _ -> saveCharacterData(false);
+    row.addComponent(saveButton);
+
+    final saveOffsetsButton:haxe.ui.components.Button = new haxe.ui.components.Button();
+    saveOffsetsButton.text = 'Save Offsets';
+    saveOffsetsButton.width = 120;
+    saveOffsetsButton.onClick = _ -> saveCharacterData(true);
+    row.addComponent(saveOffsetsButton);
+
+    content.addComponentAt(header, 0);
+    content.addComponentAt(row, 1);
+    offsetEditorDialog.height += 70;
+  }
+
+  function saveCharacterData(offsetsOnly:Bool):Void
+  {
+    if (swagChar == null) return;
+
+    final outputString:String = offsetsOnly ? buildOutputStringOld() : buildOutputStringNew();
+    saveOffsets(outputString, offsetsOnly ? swagChar.characterId + "Offsets.txt" : swagChar.characterId + ".json");
+  }
+
   function resetWindowTitle():Void
   {
     WindowUtil.setWindowTitle('Friday Night Funkin\'');
@@ -419,8 +457,7 @@ class DebugBoundingState extends FlxState
     // "WINDOWS" key code is the same keycode as COMMAND on mac
     if ((FlxG.keys.pressed.CONTROL || FlxG.keys.pressed.WINDOWS) && FlxG.keys.justPressed.S)
     {
-      var outputString = FlxG.keys.pressed.SHIFT ? buildOutputStringOld() : buildOutputStringNew();
-      saveOffsets(outputString, FlxG.keys.pressed.SHIFT ? swagChar.characterId + "Offsets.txt" : swagChar.characterId + ".json");
+      saveCharacterData(FlxG.keys.pressed.SHIFT);
       return;
     }
 

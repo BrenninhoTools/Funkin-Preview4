@@ -97,7 +97,7 @@ class NumberPreferenceItem extends TextMenuItem
     #if FEATURE_TOUCH_CONTROLS
     final dragThreshold:Float = 24 / elapsed / 100;
 
-    if (TouchUtil.touch != null && (TouchUtil.touch.deltaViewX <= -dragThreshold || TouchUtil.touch.deltaViewX >= dragThreshold))
+    if (TouchUtil.isHorizontalGesture() && (TouchUtil.touch.deltaViewX <= -dragThreshold || TouchUtil.touch.deltaViewX >= dragThreshold))
     {
       valueChangeMultiplier = dragStepMultiplier;
     }
@@ -105,12 +105,12 @@ class NumberPreferenceItem extends TextMenuItem
 
     if (holdDelayTimer <= 0.0 && changeRateTimer <= 0.0)
     {
-      if (controls().UI_LEFT #if FEATURE_TOUCH_CONTROLS || (TouchUtil.touch != null && TouchUtil.touch.deltaX <= -dragThreshold) #end)
+      if (controls().UI_LEFT #if FEATURE_TOUCH_CONTROLS || (TouchUtil.isHorizontalGesture() && TouchUtil.touch.deltaViewX <= -dragThreshold) #end)
       {
         shouldDecrease = true;
         changeRateTimer = CHANGE_RATE;
       }
-      else if (controls().UI_RIGHT #if FEATURE_TOUCH_CONTROLS || (TouchUtil.touch != null && TouchUtil.touch.deltaX >= dragThreshold) #end)
+      else if (controls().UI_RIGHT #if FEATURE_TOUCH_CONTROLS || (TouchUtil.isHorizontalGesture() && TouchUtil.touch.deltaViewX >= dragThreshold) #end)
       {
         shouldIncrease = true;
         changeRateTimer = CHANGE_RATE;

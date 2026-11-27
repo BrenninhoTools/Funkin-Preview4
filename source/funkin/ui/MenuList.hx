@@ -120,10 +120,10 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     var newIndex = 0;
 
     // Define unified input handlers
-    final inputUp:Bool = controls.UI_UP_P || (!_isMainMenuState && SwipeUtil.swipeUp);
-    final inputDown:Bool = controls.UI_DOWN_P || (!_isMainMenuState && SwipeUtil.swipeDown);
-    final inputLeft:Bool = controls.UI_LEFT_P || (!_isMainMenuState && SwipeUtil.swipeLeft);
-    final inputRight:Bool = controls.UI_RIGHT_P || (!_isMainMenuState && SwipeUtil.swipeRight);
+    final inputUp:Bool = controls.UI_UP_P || (!_isMainMenuState && !TouchUtil.isHorizontalGesture() && SwipeUtil.swipeUp);
+    final inputDown:Bool = controls.UI_DOWN_P || (!_isMainMenuState && !TouchUtil.isHorizontalGesture() && SwipeUtil.swipeDown);
+    final inputLeft:Bool = controls.UI_LEFT_P || (!_isMainMenuState && !TouchUtil.isVerticalGesture() && SwipeUtil.swipeLeft);
+    final inputRight:Bool = controls.UI_RIGHT_P || (!_isMainMenuState && !TouchUtil.isVerticalGesture() && SwipeUtil.swipeRight);
 
     // Keepin' these for keyboard/controller support on mobile platforms
     newIndex = switch (navControls)
@@ -154,19 +154,18 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
       selectItem(newIndex);
     }
 
-    if (TouchUtil.pressed)
+    if (TouchUtil.pressed || (!_isMainMenuState && TouchUtil.justReleased))
     {
       for (i in 0...members.length)
       {
         final item = members[i];
-        final menuCamera = FlxG.cameras.list[1];
 
-        final itemOverlaps:Bool = !_isMainMenuState && TouchUtil.overlaps(item, menuCamera);
-        final itemPixelOverlap:Bool = _isMainMenuState && FlxG.pixelPerfectOverlap(touchBuddy, item, 0);
+        final itemOverlaps:Bool = !_isMainMenuState && TouchUtil.pressAction(item, item.getCameras()[0], false);
+        final itemPixelOverlap:Bool = _isMainMenuState && TouchUtil.justPressed && FlxG.pixelPerfectOverlap(touchBuddy, item, 0);
 
         final isTouchingItem:Bool = itemOverlaps || itemPixelOverlap;
 
-        if (item.available && isTouchingItem && TouchUtil.justPressed)
+        if (item.available && isTouchingItem)
         {
           var prevIndex:Int = selectedIndex;
 

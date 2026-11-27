@@ -156,6 +156,32 @@ class TouchUtil
     return false;
   }
 
+  public static function isHorizontalGesture():Bool
+  {
+    #if mobile
+    final current:Null<FlxTouch> = touch;
+    if (current == null || !current.pressed) return false;
+    final distanceX:Float = Math.abs(current.viewX - current.justPressedPosition.x);
+    final distanceY:Float = Math.abs(current.viewY - current.justPressedPosition.y);
+    return distanceX > TAP_SLOP && distanceX > distanceY * 1.5;
+    #else
+    return false;
+    #end
+  }
+
+  public static function isVerticalGesture():Bool
+  {
+    #if mobile
+    final current:Null<FlxTouch> = touch;
+    if (current == null || !current.pressed) return false;
+    final distanceX:Float = Math.abs(current.viewX - current.justPressedPosition.x);
+    final distanceY:Float = Math.abs(current.viewY - current.justPressedPosition.y);
+    return distanceY > TAP_SLOP && distanceY > distanceX * 1.5;
+    #else
+    return false;
+    #end
+  }
+
   static final TAP_MAX_TICKS:Float = 400;
 
   static final TAP_SLOP:Float = 32;

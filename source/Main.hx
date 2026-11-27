@@ -31,6 +31,10 @@ class Main extends Sprite
     funkin.util.CLIUtil.resetWorkingDir();
     #end
 
+    #if (cpp && mobile)
+    cpp.vm.Gc.setTargetFreeSpacePercentage(50);
+    #end
+
     if (stage != null)
     {
       init();

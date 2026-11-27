@@ -1223,7 +1223,7 @@ class Project extends HXProject
       excludeFromScripting();
     }
 
-    if (FEATURE_DEBUG_FUNCTIONS.isDisabled(this))
+    if (FEATURE_DEBUG_FUNCTIONS.isDisabled(this) || (isMobile() && isRelease()))
     {
       setHaxedef("FLX_NO_DEBUG"); // If we aren't using the Flixel debugger, strip it out.
       setHaxedef("analyzer-optimize"); // Optimize haxe code when not in debug to improve performance.

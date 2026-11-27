@@ -179,7 +179,7 @@ jobs:
             astc-
 
       - name: Build
-        run: haxelib run lime build android -release -arm64 -DGITHUB_BUILD -DNO_FEATURE_MOBILE_ADVERTISEMENTS -DNO_FEATURE_MOBILE_IAP
+        run: haxelib run lime build android -release -arm64 -DGITHUB_BUILD -DNO_FEATURE_STACK_TRACE -DNO_FEATURE_MOBILE_ADVERTISEMENTS -DNO_FEATURE_MOBILE_IAP
         timeout-minutes: 120
 
       - name: Upload APK

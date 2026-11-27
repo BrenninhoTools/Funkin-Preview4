@@ -373,7 +373,13 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
     // Perform garbage collection here, after we deleted a bunch of stuff, to free the memory we're no longer using.
     #if (cpp || neko || js)
-    if (garbageCollect) funkin.util.MemoryUtil.collect(true);
+    if (garbageCollect)
+    {
+      funkin.util.MemoryUtil.collect(true);
+      #if (cpp && mobile)
+      funkin.util.MemoryUtil.compact();
+      #end
+    }
     #end
   }
 
