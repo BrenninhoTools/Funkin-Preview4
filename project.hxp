@@ -1111,9 +1111,7 @@ class Project extends HXProject
     // It's kept off for desktop due to the low ASTC support on desktop GPUs (which seem to be only among Intergrated Graphics).
     FEATURE_COMPRESSED_TEXTURES.apply(this, isMobile() && isRelease() && !isIOSSimulator());
 
-    // Turns the debug display off if you are on a non debug mobile build
-    // Desktop (Native and Web) always has it | Used for mobile debugging purposes
-    FEATURE_DEBUG_DISPLAY.apply(this, !isMobile() || FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
+    FEATURE_DEBUG_DISPLAY.apply(this, true);
 
     if (isRun() || isInstall() || isUninstall())
     {

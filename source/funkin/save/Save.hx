@@ -147,7 +147,7 @@ class Save implements ConsoleClass implements ISerializable
         downscroll: false,
         flashingLights: true,
         zoomCamera: true,
-        debugDisplay: 'Off',
+        debugDisplay: #if mobile 'Simple' #else 'Off' #end,
         debugDisplayBGOpacity: 50,
         subtitles: true,
         hapticsMode: 'All',
