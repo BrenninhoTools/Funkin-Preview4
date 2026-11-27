@@ -846,10 +846,9 @@ class Project extends HXProject
 
     if (isAndroid())
     {
-      if (EXCLUDE_ARMV7.isEnabled(this))
-      {
-        this.excludeArchitectures.push(Architecture.ARMV7);
-      }
+      this.excludeArchitectures.push(Architecture.ARMV7);
+      this.excludeArchitectures.push(Architecture.X86);
+      this.excludeArchitectures.push(Architecture.X64);
 
       if (isRelease())
       {
