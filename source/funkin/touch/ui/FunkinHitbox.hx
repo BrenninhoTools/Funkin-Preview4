@@ -333,15 +333,13 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
         for (i in 0...hintsNoteDirections.length)
         {
           add(
-            createHintLane(
+            createHintFlatLane(
               i * hintWidth,
               0,
               hintsNoteDirections[i % hintsNoteDirections.length],
               hintWidth,
               hintHeight,
-              hintsColors[i % hintsColors.length],
-              true,
-              showGradint
+              hintsColors[i % hintsColors.length]
             )
           );
         }
@@ -637,6 +635,33 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
    * @param baseColor The base color of the graphic.
    * @return A `FlxGraphic` object representing the button graphic.
    */
+  function createHintFlatLane(x:Float, y:Float, noteDirection:NoteDirection, width:Int, height:Int, color:FlxColor):FunkinHint
+  {
+    final hint:FunkinHint = new FunkinHint(x, y, noteDirection, null);
+    hint.loadGraphic(createHintFlatLaneGraphic(width, height, color));
+    hint.onDown.add(onHintDown.dispatch.bind(hint));
+    hint.onUp.add(onHintUp.dispatch.bind(hint));
+    hint.onOut.add(onHintUp.dispatch.bind(hint));
+    hint.onDown.add(() -> hint.alpha = FLAT_LANE_PRESSED_ALPHA);
+    hint.onUp.add(() -> hint.alpha = FLAT_LANE_IDLE_ALPHA);
+    hint.onOut.add(() -> hint.alpha = FLAT_LANE_IDLE_ALPHA);
+    hint.alpha = FLAT_LANE_IDLE_ALPHA;
+    return hint;
+  }
+
+  static final FLAT_LANE_PRESSED_ALPHA:Float = 0.3;
+
+  static final FLAT_LANE_IDLE_ALPHA:Float = 0.00001;
+
+  static final FLAT_LANE_BORDER:Int = 4;
+
+  function createHintFlatLaneGraphic(width:Int, height:Int, color:FlxColor):FlxGraphic
+  {
+    final graphicData:BitmapData = new BitmapData(width, height, true, 0xFF000000);
+    graphicData.fillRect(new openfl.geom.Rectangle(FLAT_LANE_BORDER, FLAT_LANE_BORDER, width - FLAT_LANE_BORDER * 2, height - FLAT_LANE_BORDER * 2), color | 0xFF000000);
+    return FlxGraphic.fromBitmapData(graphicData, false, null, false);
+  }
+
   function createHintLaneGraphic(width:Int,
     height:Int,
     baseColor:FlxColor = 0xFFFFFFFF,

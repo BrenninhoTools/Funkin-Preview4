@@ -117,6 +117,16 @@ class DebugBoundingState extends FlxState
     Cursor.show();
 
     super.create();
+
+    #if FEATURE_TOUCH_CONTROLS
+    final controlsCamera:funkin.graphics.FunkinCamera = new funkin.graphics.FunkinCamera('camControls');
+    controlsCamera.bgColor = 0x0;
+    FlxG.cameras.add(controlsCamera, false);
+    final backButton:funkin.touch.ui.FunkinBackButton = new funkin.touch.ui.FunkinBackButton(FlxG.width - 230, FlxG.height - 200, flixel.util.FlxColor.WHITE,
+      exitToDebugMenu, 0.3);
+    backButton.cameras = [controlsCamera];
+    add(backButton);
+    #end
   }
 
   var bf:FlxSprite;
@@ -339,14 +349,7 @@ class DebugBoundingState extends FlxState
     }
     #end
     #if android
-    if (FlxG.android.justReleased.BACK)
-    {
-      Cursor.hide();
-      funkin.ui.transition.Transition.switchState(() -> new funkin.ui.debug.DebugMenuState(), {
-        assetQuery: funkin.ui.transition.Transition.NO_ASSETS,
-        transition: BlackScreen(None, None)
-      });
-    }
+    if (FlxG.android.justReleased.BACK) exitToDebugMenu();
     #end
 
     // bg.scale.x = FlxG.camera.zoom;
@@ -356,6 +359,15 @@ class DebugBoundingState extends FlxState
 
     super.update(elapsed);
     MouseUtil.updateMiddleMouseDragCursor(FlxG.mouse.pressedMiddle);
+  }
+
+  function exitToDebugMenu():Void
+  {
+    Cursor.hide();
+    funkin.ui.transition.Transition.switchState(() -> new funkin.ui.debug.DebugMenuState(), {
+      assetQuery: funkin.ui.transition.Transition.NO_ASSETS,
+      transition: BlackScreen(None, None)
+    });
   }
 
   static final TRACKPAD_PAN_SCALE:Float = 25.0;
@@ -705,6 +717,10 @@ class DebugBoundingState extends FlxState
   {
     if ((saveString != null) && (saveString.length > 0))
     {
+      #if android
+      funkin.external.android.FileDialogUtil.saveBytes(fileName, haxe.io.Bytes.ofString(saveString), 'text/plain');
+      return;
+      #end
       _file = new FileReference();
       _file.addEventListener(Event.COMPLETE, onSaveComplete);
       _file.addEventListener(Event.CANCEL, onSaveCancel);

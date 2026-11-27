@@ -119,7 +119,8 @@ class Project extends HXProject
    */
   static final ANDROID_EXTENSIONS:Array<String> = [
     "funkin.extensions.CallbackUtil",
-    "funkin.extensions.FNFLoaderExtension"
+    "funkin.extensions.FNFLoaderExtension",
+    "funkin.extensions.FileDialogExtension"
   ];
 
   /**

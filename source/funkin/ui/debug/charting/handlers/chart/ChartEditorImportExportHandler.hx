@@ -32,7 +32,7 @@ class ChartEditorImportExportHandler
    */
   public static final BACKUPS_PATH:String = './backups/charts/';
 
-  #if mobile
+  #if ios
   public static final MOBILE_EXPORT_PATH:String = './charts/';
   #end
 
@@ -397,7 +397,7 @@ class ChartEditorImportExportHandler
         if (onCancelCb != null) onCancelCb();
       };
 
-      #if mobile
+      #if ios
       var mobilePath:String = Path.join([MOBILE_EXPORT_PATH, '${state.currentSongId}.${Constants.EXT_CHART}']);
       try
       {
@@ -453,7 +453,7 @@ class ChartEditorImportExportHandler
       if (onCancelCb != null) onCancelCb();
     };
 
-    #if mobile
+    #if ios
     var mobileFolder:String = Path.join([MOBILE_EXPORT_PATH, state.currentSongId]);
     try
     {

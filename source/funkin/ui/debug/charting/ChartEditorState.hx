@@ -3426,6 +3426,15 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         root.removeClass(":down", false, true);
       }
     });
+
+    #if FEATURE_TOUCH_CONTROLS
+    addBackButton(FlxG.width - 230, FlxG.height - 200, flixel.util.FlxColor.WHITE, function()
+    {
+      this.quitChartEditor(true);
+      backButton?.animation.play('idle');
+      backButton?.resetCallbacks();
+    }, 0.3);
+    #end
   }
 
   #if FEATURE_DISCORD_RPC

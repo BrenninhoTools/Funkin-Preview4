@@ -36,6 +36,16 @@ class CallbackUtil #if (lime >= '8.0.0') implements JNISafety #end
    */
   public static var onFNFMODOpen:FlxTypedSignal<String->Void> = new FlxTypedSignal<String->Void>();
 
+  public static var onFileSaved:FlxTypedSignal<String->Void> = new FlxTypedSignal<String->Void>();
+
+  public static var onFileSaveFailed:FlxTypedSignal<String->Void> = new FlxTypedSignal<String->Void>();
+
+  public static var onFileSaveCancelled:FlxSignal = new FlxSignal();
+
+  public static var onFileOpened:FlxTypedSignal<String->Void> = new FlxTypedSignal<String->Void>();
+
+  public static var onFileOpenCancelled:FlxSignal = new FlxSignal();
+
   /**
    * Initializes the callback utility.
    */

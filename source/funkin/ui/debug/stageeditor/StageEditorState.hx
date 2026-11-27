@@ -534,6 +534,15 @@ class StageEditorState extends UIState
       startingVolume: 0.0
     });
     FlxG.sound.music.fadeIn(10, 0, 1);
+
+    #if FEATURE_TOUCH_CONTROLS
+    addBackButton(FlxG.width - 230, FlxG.height - 200, flixel.util.FlxColor.WHITE, function()
+    {
+      onMenuItemClick('exit');
+      backButton?.animation.play('idle');
+      backButton?.resetCallbacks();
+    }, 0.3);
+    #end
   }
 
   function onDropFile(file:lime.utils.DroppedFile, state:String, x:Float, y:Float):Void

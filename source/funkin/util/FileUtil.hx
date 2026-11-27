@@ -197,6 +197,11 @@ class FileUtil
     {
       onCancel();
     }
+    #elseif android
+    funkin.external.android.FileDialogUtil.openFile(null, (path:String) ->
+    {
+      if (onSelect != null) onSelect(SelectedFileData.fromPath(path));
+    }, onCancel);
     #else
     FileDialog.openFile(Lib.current.stage.window, dialogTitle, (filepaths:Array<String>, filter) ->
     {
@@ -241,6 +246,11 @@ class FileUtil
     {
       onCancel();
     }
+    #elseif android
+    funkin.external.android.FileDialogUtil.openFile(null, (path:String) ->
+    {
+      if (onSelect != null) onSelect([path]);
+    }, onCancel);
     #else
     FileDialog.openFile(Lib.current.stage.window, dialogTitle, (filepaths:Array<String>, filter) ->
     {
@@ -331,6 +341,13 @@ class FileUtil
     {
       onCancel();
     }
+    #elseif android
+    if (data == null)
+    {
+      if (onCancel != null) onCancel();
+      return;
+    }
+    funkin.external.android.FileDialogUtil.saveBytes(defaultPath ?? 'file', data, null, onSave, onCancel);
     #else
     FileDialog.saveFile(Lib.current.stage.window, dialogTitle, (filepath:String, filter) ->
     {
@@ -408,6 +425,11 @@ class FileUtil
         onSaveAll(paths);
       }
     }, onCancel, defaultPath);
+    #elseif android
+    funkin.external.android.FileDialogUtil.saveEntries(resources, (uri:String) ->
+    {
+      if (onSaveAll != null) onSaveAll([uri]);
+    }, onCancel);
     #else
     saveFilesAsZIP(resources, onSaveAll, onCancel, defaultPath, force);
     #end
@@ -549,6 +571,10 @@ class FileUtil
    */
   public static function writeFileReference(path:String, data:String, callback:String->Void):Void
   {
+    #if android
+    funkin.external.android.FileDialogUtil.saveBytes(path, Bytes.ofString(data), null, (_) -> callback('success'), () -> callback('info'));
+    return;
+    #end
     var file = new FileReference();
 
     file.addEventListener(Event.COMPLETE, (e:Event) ->
@@ -641,6 +667,13 @@ class FileUtil
    */
   public static function writeBytesToPath(path:String, data:Bytes, mode:FileWriteMode = Skip):Void
   {
+    #if android
+    if (funkin.external.android.FileDialogUtil.isContentUri(path))
+    {
+      if (!funkin.external.android.FileDialogUtil.writeBytesToUri(path, data)) throw 'Could not write to "$path"';
+      return;
+    }
+    #end
     #if sys
     if (directoryExists(path))
     {

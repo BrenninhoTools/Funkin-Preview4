@@ -980,6 +980,15 @@ class CameraEditorState extends UIState implements ConsoleClass
         root.removeClass(":down", false, true);
       }
     });
+
+    #if FEATURE_TOUCH_CONTROLS
+    addBackButton(FlxG.width - 230, FlxG.height - 200, flixel.util.FlxColor.WHITE, function()
+    {
+      onMenubarExit(null);
+      backButton?.animation.play('idle');
+      backButton?.resetCallbacks();
+    }, 0.3);
+    #end
   }
 
   override function onPreHotReload():Void
