@@ -107,7 +107,7 @@ class DebugBoundingState extends FlxState
 
     // Anchor to the left side by default
     offsetEditorDialog.x = 16;
-    offsetEditorDialog.y = 16;
+    offsetEditorDialog.y = Preferences.debugDisplay == funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode.Off ? 16 : 110;
 
     // sets the default camera back to FlxG.camera, since we set it to hudCamera for haxeui stuf
     FlxG.cameras.setDefaultDrawTarget(FlxG.camera, true);
@@ -426,10 +426,17 @@ class DebugBoundingState extends FlxState
 
   function saveCharacterData(offsetsOnly:Bool):Void
   {
-    if (swagChar == null) return;
+    if (swagChar == null || swagChar._data == null) return;
 
-    final outputString:String = offsetsOnly ? buildOutputStringOld() : buildOutputStringNew();
-    saveOffsets(outputString, offsetsOnly ? swagChar.characterId + "Offsets.txt" : swagChar.characterId + ".json");
+    try
+    {
+      final outputString:String = offsetsOnly ? buildOutputStringOld() : buildOutputStringNew();
+      saveOffsets(outputString, offsetsOnly ? swagChar.characterId + "Offsets.txt" : swagChar.characterId + ".json");
+    }
+    catch (e)
+    {
+      lime.app.Application.current.window.alert(Std.string(e), 'Could not save');
+    }
   }
 
   function resetWindowTitle():Void
@@ -590,7 +597,9 @@ class DebugBoundingState extends FlxState
 
     for (i in swagChar.animationOffsets.keys())
     {
-      outputString += i + " " + swagChar.animationOffsets.get(i)[0] + " " + swagChar.animationOffsets.get(i)[1] + "\n";
+      final offsets:Null<Array<Float>> = swagChar.animationOffsets.get(i);
+      if (offsets == null || offsets.length < 2) continue;
+      outputString += i + " " + offsets[0] + " " + offsets[1] + "\n";
     }
 
     outputString.trim();
@@ -606,21 +615,24 @@ class DebugBoundingState extends FlxState
     if (charData.offsets == CharacterData.DEFAULT_OFFSETS) Reflect.deleteField(charData, "offsets");
     if (charData.cameraOffsets == CharacterData.DEFAULT_OFFSETS) Reflect.deleteField(charData, "cameraOffsets");
 
-    if (charData.healthIcon.id == swagChar.characterId) Reflect.deleteField(charData.healthIcon, "id");
-    if (charData.healthIcon.scale == CharacterData.DEFAULT_SCALE) Reflect.deleteField(charData.healthIcon, "scale");
-    if (charData.healthIcon.flipX == CharacterData.DEFAULT_FLIPX) Reflect.deleteField(charData.healthIcon, "flipX");
-    if (charData.healthIcon.isPixel == CharacterData.DEFAULT_ISPIXEL) Reflect.deleteField(charData.healthIcon, "isPixel");
-    if (charData.healthIcon.offsets == CharacterData.DEFAULT_OFFSETS) Reflect.deleteField(charData.healthIcon, "offsets");
-
-    if (
-      charData.healthIcon.id == null
-      && charData.healthIcon.scale == null
-      && charData.healthIcon.flipX == null
-      && charData.healthIcon.isPixel == null
-      && charData.healthIcon.offsets == null
-    )
+    if (charData.healthIcon != null)
     {
-      Reflect.deleteField(charData, "healthIcon");
+      if (charData.healthIcon.id == swagChar.characterId) Reflect.deleteField(charData.healthIcon, "id");
+      if (charData.healthIcon.scale == CharacterData.DEFAULT_SCALE) Reflect.deleteField(charData.healthIcon, "scale");
+      if (charData.healthIcon.flipX == CharacterData.DEFAULT_FLIPX) Reflect.deleteField(charData.healthIcon, "flipX");
+      if (charData.healthIcon.isPixel == CharacterData.DEFAULT_ISPIXEL) Reflect.deleteField(charData.healthIcon, "isPixel");
+      if (charData.healthIcon.offsets == CharacterData.DEFAULT_OFFSETS) Reflect.deleteField(charData.healthIcon, "offsets");
+
+      if (
+        charData.healthIcon.id == null
+        && charData.healthIcon.scale == null
+        && charData.healthIcon.flipX == null
+        && charData.healthIcon.isPixel == null
+        && charData.healthIcon.offsets == null
+      )
+      {
+        Reflect.deleteField(charData, "healthIcon");
+      }
     }
 
     if (charData.startingAnimation == CharacterData.DEFAULT_STARTINGANIM) Reflect.deleteField(charData, "startingAnimation");
@@ -634,11 +646,11 @@ class DebugBoundingState extends FlxState
     for (charDataAnim in charData.animations)
     {
       var animName:String = charDataAnim.name;
-      charDataAnim.offsets = swagChar.animationOffsets.get(animName);
+      charDataAnim.offsets = swagChar.animationOffsets.get(animName) ?? charDataAnim.offsets ?? [0, 0];
 
       if (charDataAnim.animType == CharacterData.DEFAULT_ANIMTYPE) Reflect.deleteField(charDataAnim, "animType");
       if (charDataAnim.frameRate == CharacterData.DEFAULT_FRAMERATE) Reflect.deleteField(charDataAnim, "frameRate");
-      if (charDataAnim.offsets[0] == 0 && charDataAnim.offsets[1] == 0) Reflect.deleteField(charDataAnim, "offsets");
+      if (charDataAnim.offsets == null || charDataAnim.offsets.length < 2 || (charDataAnim.offsets[0] == 0 && charDataAnim.offsets[1] == 0)) Reflect.deleteField(charDataAnim, "offsets");
       if (charDataAnim.looped == CharacterData.DEFAULT_LOOP) Reflect.deleteField(charDataAnim, "looped");
       if (charDataAnim.flipX == CharacterData.DEFAULT_FLIPX) Reflect.deleteField(charDataAnim, "flipX");
       if (charDataAnim.flipY == CharacterData.DEFAULT_FLIPY) Reflect.deleteField(charDataAnim, "flipY");

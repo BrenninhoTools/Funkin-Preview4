@@ -65,6 +65,13 @@ class PauseSubState extends MusicBeatSubState
       text: 'Restart Song',
       callback: restartPlayState
     },
+    #if (FEATURE_CHART_EDITOR && mobile)
+    {
+      text: 'Chart Editor',
+      callback: openChartEditor,
+      filter: () -> Preferences.chartEditorInPause
+    },
+    #end
     {
       text: 'Change Difficulty',
       callback: switchMode.bind(_, Difficulty)
@@ -74,13 +81,6 @@ class PauseSubState extends MusicBeatSubState
       callback: enablePracticeMode,
       filter: () -> !(PlayState.instance?.isPracticeMode ?? false)
     },
-    #if (FEATURE_CHART_EDITOR && mobile)
-    {
-      text: 'Chart Editor',
-      callback: openChartEditor,
-      filter: () -> Preferences.chartEditorInPause
-    },
-    #end
     {
       text: 'Exit to Menu',
       callback: quitToMenu
@@ -1026,6 +1026,15 @@ class PauseSubState extends MusicBeatSubState
 
     // Render out the entries depending on the mode.
     var entryIndex:Int = 0;
+    #if FEATURE_TOUCH_CONTROLS
+    var visibleCount:Int = 0;
+    for (entry in currentMenuEntries)
+    {
+      if (entry != null && (entry.filter == null || entry.filter())) visibleCount++;
+    }
+    final entryTop:Float = visibleCount > 5 ? 100 : 150;
+    final entrySpacing:Float = Math.min(105, (FlxG.height - entryTop - 80) / Math.max(1, visibleCount));
+    #end
     var toRemove = [];
     for (entry in currentMenuEntries)
     {
@@ -1041,7 +1050,7 @@ class PauseSubState extends MusicBeatSubState
         // var yPos:Float = (150 * entryIndex) + 100;
 
         // var yPos:Float = (140 * entryIndex) + 150;
-        var yPos:Float = (105 * entryIndex) + 150;
+        var yPos:Float = (entrySpacing * entryIndex) + entryTop;
 
         var text:AtlasText = new AtlasText(110, yPos, entry.text, AtlasFont.BOLD);
         text.scrollFactor.set(0, 0);
@@ -1049,7 +1058,7 @@ class PauseSubState extends MusicBeatSubState
         for (letter in text)
         {
           letter.width *= 1.2;
-          letter.height *= 1.4;
+          letter.height = Math.min(letter.height * 1.4, entrySpacing);
         }
         menuEntryText.add(text);
 
