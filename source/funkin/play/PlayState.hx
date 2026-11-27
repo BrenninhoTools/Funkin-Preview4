@@ -653,6 +653,13 @@ class PlayState extends MusicBeatSubState
    */
   var pauseButton:FunkinSprite;
 
+  var inFourLanesTouchMode(get, never):Bool;
+
+  function get_inFourLanesTouchMode():Bool
+  {
+    return Preferences.controlsScheme == FunkinHitboxControlSchemes.FourLanes && !ControlsHandler.hasExternalInputDevice;
+  }
+
   /**
    * The pause circle for the game, only appears in Mobile targets.
    */
@@ -3323,7 +3330,7 @@ class PlayState extends MusicBeatSubState
       var notesInDirection:Array<NoteSprite> = notesByDirection[input.noteDirection];
 
       #if FEATURE_GHOST_TAPPING
-      if ((!playerStrumline.mayGhostTap()) && notesInDirection.length == 0)
+      if ((#if FEATURE_TOUCH_CONTROLS inFourLanesTouchMode || #end !playerStrumline.mayGhostTap()) && notesInDirection.length == 0)
       #else
       if (notesInDirection.length == 0)
       #end
@@ -3629,7 +3636,7 @@ class PlayState extends MusicBeatSubState
 
     // 9: Toggle the old icon.
     if
-      ((FlxG.keys.justPressed.NINE #if FEATURE_TOUCH_CONTROLS || (TouchUtil.justPressed && TouchUtil.overlapsComplex(iconP1)) #end)
+      ((FlxG.keys.justPressed.NINE #if FEATURE_TOUCH_CONTROLS || (!inFourLanesTouchMode && TouchUtil.justPressed && TouchUtil.overlapsComplex(iconP1)) #end)
         && iconP1 != null
       ) iconP1.toggleOldIcon();
 
